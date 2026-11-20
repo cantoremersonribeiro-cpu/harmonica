@@ -1175,5 +1175,33 @@ GET THE HARMONICA MAP FOR $9
 })();
 </script>
 
+<script>
+(function () {
+  try {
+    var q = new URLSearchParams(location.search), k = 'mr_sck';
+    var v = q.get('sck');
+    if (!v) {
+      var id = function (n) { var x = q.get(n); if (!x) return ''; var p = x.split('|'); return p[p.length - 1].replace(/[^0-9]/g, ''); };
+      var c = id('utm_campaign'), m = id('utm_medium'), a = id('utm_content');
+      if (c || m || a) v = [c, m, a].join('_');
+    }
+    if (v) sessionStorage.setItem(k, v);
+    v = v || sessionStorage.getItem(k);
+    if (!v) return;
+    function ajusta(a) {
+      try {
+        var u = new URL(a.href, location.href);
+        if (!/(^|\.)hotmart\.com$/i.test(u.hostname)) return;
+        if (!u.searchParams.has('sck')) { u.searchParams.set('sck', v); a.href = u.toString(); }
+      } catch (e) {}
+    }
+    function varre() { var as = document.querySelectorAll('a[href]'); for (var i = 0; i < as.length; i++) ajusta(as[i]); }
+    varre();
+    new MutationObserver(varre).observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href]'); if (a) ajusta(a); }, true);
+  } catch (e) {}
+})();
+</script>
+
 </body>
 </html>
